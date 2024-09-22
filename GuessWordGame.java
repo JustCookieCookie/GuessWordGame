@@ -5,12 +5,21 @@ import java.util.Scanner;
 
 class GuessWordGame {
 
+    public static final String resetColor = "\u001B[0m";
+    public static final String redColor = "\u001B[31m";
+    public static final String greenColor = "\u001B[32m";
+    public static final String yellowColor = "\u001B[33m";
+    public static final String blueColor = "\u001B[34m";
+    public static final String purpleColor = "\u001B[35m";
+
     static Scanner enterScanner = new Scanner(System.in);
     Random random = new Random();
     Scanner scanner = new Scanner(System.in);
 
     boolean game = true;
+    int maxAttempts;
     int attempts = 0;
+    int count;
     String word;
     String[] nullWord;
     String userChar;
@@ -25,10 +34,11 @@ class GuessWordGame {
 
         attempts = 0;
         game = true;
+        userChar = "";
 
         System.out.println("Can you guess the word? Just type in a letter and I'll show you if there is a letter in the word!");
 
-        System.out.println("Click ENTER");
+        System.out.println(purpleColor + "Click ENTER" + resetColor);
         enterScanner.nextLine();
 
         generateWord();
@@ -41,6 +51,8 @@ class GuessWordGame {
 
         int randomNumber = random.nextInt(words.length);
         word = words[randomNumber];
+
+        maxAttempts = word.length() * 2;
 
         generateNullWord();
     }
@@ -58,17 +70,20 @@ class GuessWordGame {
     void gameLetter() {
         if (game == true) {
             while (true) {
-                System.out.println("You letter:");
+                System.out.print(blueColor + "You letter: " + resetColor);
                 userChar = scanner.nextLine();
+
                 clearScreen();
+                controlAttempts();
 
                 if (userChar.trim().length() != 1) {
                     clearScreen();
 
                     attempts++;
+                    controlAttempts();
 
-                    System.out.println("Type one letter!");
-                    System.out.println("Click ENTER");
+                    System.out.println(redColor + "Type one letter!" + resetColor);
+                    System.out.println(purpleColor + "Click ENTER" + resetColor);
                     enterScanner.nextLine();
 
                     clearScreen();
@@ -79,6 +94,7 @@ class GuessWordGame {
                     controlLetter();
                     break;
                 }
+                controlAttempts();
             }   
         }
     }
@@ -91,13 +107,14 @@ class GuessWordGame {
             }
         }
 
-        printStats();
         controlWin();
+        controlAttempts();
+        printStats();
         gameLetter();
     }
 
     void controlWin() {
-        int count = 0;
+        count = 0;
 
         for (String nullWordLoop : nullWord) {
             if (nullWordLoop.equals("_")) {
@@ -111,19 +128,34 @@ class GuessWordGame {
             clearScreen();
             printStats();
 
-            System.out.println("WIN");
+            System.out.println(greenColor + "WIN" + resetColor);
 
-            System.out.println("Click ENTER");
+            System.out.println(purpleColor + "Click ENTER" + resetColor);
             enterScanner.nextLine();
 
-            startGame();
+            startGame(); 
         }
     }
 
-    public void printStats() {
-        System.out.println("Attempts made: " + attempts);
+    void controlAttempts() {
+        if (attempts >= maxAttempts) {
+            game = false;
+            
+            clearScreen();
+
+            System.out.println(redColor + "DEAD" + resetColor);
+
+            System.out.println(purpleColor + "Click ENTER" + resetColor);
+            enterScanner.nextLine();
+
+            startGame();   
+        }
+    }
+
+    void printStats() {
+        System.out.println(yellowColor + "Attempts made: " + attempts + "/" + maxAttempts);
         System.out.println("-------------------");
-        System.out.println(Arrays.toString(nullWord));  
+        System.out.println(Arrays.toString(nullWord) + resetColor);  
     }
 
     public static void clearScreen() {  
